@@ -19,7 +19,7 @@ services:
       - wekan-tier
     environment:
       - MONGO_URL=mongodb://wekandb:27017/wekan
-      - ROOT_URL=https://wekan.mhemeryck.com
+      - ROOT_URL=https://${HOST}
       - WITH_API=true
       - RICHER_CARD_COMMENT_EDITOR=false
       - SCROLLINERTIA=0
@@ -31,7 +31,7 @@ services:
       - wekandb
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.wekan.rule=Host(`wekan.mhemeryck.com`)"
+      - "traefik.http.routers.wekan.rule=Host(`${HOST}`)"
       - "traefik.http.routers.wekan.entrypoints=websecure"
       - "traefik.http.routers.wekan.tls.certresolver=doresolver"
       - "traefik.http.services.wekan.loadbalancer.server.port=8080"
