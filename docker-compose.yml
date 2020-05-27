@@ -17,9 +17,10 @@ services:
     restart: always
     networks:
       - wekan-tier
+      - drop
     environment:
       - MONGO_URL=mongodb://wekandb:27017/wekan
-      - ROOT_URL=https://wekan.mhemeryck.com
+      - ROOT_URL=https://${HOST}
       - WITH_API=true
       - RICHER_CARD_COMMENT_EDITOR=false
       - SCROLLINERTIA=0
@@ -31,44 +32,17 @@ services:
       - wekandb
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.wekan.rule=Host(`wekan.mhemeryck.com`)"
+      - "traefik.http.routers.wekan.rule=Host(`${HOST}`)"
       - "traefik.http.routers.wekan.entrypoints=websecure"
       - "traefik.http.routers.wekan.tls.certresolver=doresolver"
       - "traefik.http.services.wekan.loadbalancer.server.port=8080"
-      # https redirect
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-      - "traefik.http.routers.redirs.rule=hostregexp(`{host:.+}`)"
-      - "traefik.http.routers.redirs.entrypoints=web"
-      - "traefik.http.routers.redirs.middlewares=redirect-to-https"
-  traefik:
-    image: traefik:v2.2
-    command:
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.doresolver.acme.dnschallenge=true"
-      - "--certificatesresolvers.doresolver.acme.dnschallenge.provider=digitalocean"
-      - "--certificatesresolvers.doresolver.acme.email=${EMAIL}"
-      - "--certificatesresolvers.doresolver.acme.storage=/letsencrypt/acme.json"
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    environment:
-      - DO_AUTH_TOKEN=${DO_AUTH_TOKEN}
-    volumes:
-      - ./letsencrypt:/letsencrypt
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks:
-      - wekan-tier
 
 volumes:
   wekan-db:
-    driver: local
   wekan-db-dump:
-    driver: local
 
 networks:
   wekan-tier:
     driver: bridge
+  drop:
+    external: true
