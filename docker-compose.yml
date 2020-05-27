@@ -36,11 +36,6 @@ services:
       - "traefik.http.routers.wekan.entrypoints=websecure"
       - "traefik.http.routers.wekan.tls.certresolver=doresolver"
       - "traefik.http.services.wekan.loadbalancer.server.port=8080"
-      # https redirect
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-      - "traefik.http.routers.redirs.rule=hostregexp(`{host:.+}`)"
-      - "traefik.http.routers.redirs.entrypoints=web"
-      - "traefik.http.routers.redirs.middlewares=redirect-to-https"
 
 volumes:
   wekan-db:
